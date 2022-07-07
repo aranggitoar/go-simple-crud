@@ -155,7 +155,7 @@ func (d *Driver[T]) ReadRow(tn string, qh *QueryHook) (*T, error) {
 // Takes the table's name, formatted values, to be updated column's hook,
 // and its value.
 // Returns error if something wrong happened.
-func (d *Driver[T]) UpdateRow(tn string, fvs string, qh QueryHook) error {
+func (d *Driver[T]) UpdateRow(tn string, fvs string, qh *QueryHook) error {
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s = \"%s\";", tn, fvs, qh.Name, qh.Value)
 	return UpdateDeleteHelper(d, query, RowUpdateFailed)
 }
