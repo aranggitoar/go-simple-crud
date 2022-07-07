@@ -50,11 +50,21 @@ func (d *Driver[T]) InitDB(tn string, q string) error {
 	return err
 }
 
+// Drop a table.
+// Takes the table's name and creation query.
+// Returns error if something wrong happened
+func (d *Driver[T]) DropTable(tn string) error {
+	query := fmt.Sprintf("DROP TABLE %s;", tn)
+
+	_, err := d.db.Exec(query)
+	return err
+}
+
 // Create a row.
 // Takes the table's name, field names, and values.
 // Returns error if something wrong happened.
 func (d *Driver[T]) CreateRow(tn string, fn string, vs string) error {
-	query := fmt.Sprintf("INSERT INTO %s(%s) values(%s)", tn, fn, vs)
+	query := fmt.Sprintf("INSERT INTO %s(%s) values(%s);", tn, fn, vs)
 	_, err := d.db.Exec(query)
 	if err != nil {
 		var sqliteErr sqlite3.Error
@@ -73,7 +83,7 @@ func (d *Driver[T]) CreateRow(tn string, fn string, vs string) error {
 // Returns all rows in the struct type that was initialized with a nil as
 // an error value or nil with an error value if something wrong happened.
 func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
-	rows, err := d.db.Query(fmt.Sprintf("SELECT * FROM %s", tn))
+	rows, err := d.db.Query(fmt.Sprintf("SELECT * FROM %s;", tn))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +120,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 // Returns the row in the struct type that was initialized with a nil as
 // an error value or nil with an error value if something wrong happened.
 func (d *Driver[T]) ReadRow(tn string, qh *QueryHook) (*T, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = \"%s\"", tn, qh.Name, qh.Value)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = \"%s\";", tn, qh.Name, qh.Value)
 	row := d.db.QueryRow(query)
 
 	// Get the columns dynamically.
@@ -146,7 +156,7 @@ func (d *Driver[T]) ReadRow(tn string, qh *QueryHook) (*T, error) {
 // and its value.
 // Returns error if something wrong happened.
 func (d *Driver[T]) UpdateRow(tn string, fvs string, qh QueryHook) error {
-	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s = \"%s\"", tn, fvs, qh.Name, qh.Value)
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s = \"%s\";", tn, fvs, qh.Name, qh.Value)
 	return UpdateDeleteHelper(d, query, RowUpdateFailed)
 }
 
@@ -154,7 +164,7 @@ func (d *Driver[T]) UpdateRow(tn string, fvs string, qh QueryHook) error {
 // Takes the table's name, to be deleted column's hook, and its value.
 // Returns error if something wrong happened.
 func (d *Driver[T]) DeleteRow(tn string, qh *QueryHook) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s = \"%s\"", tn, qh.Name, qh.Value)
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = \"%s\";", tn, qh.Name, qh.Value)
 	return UpdateDeleteHelper(d, query, RowDeleteFailed)
 }
 
