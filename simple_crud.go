@@ -220,13 +220,13 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		// log.Println(string(v))
 		// escv, _ := strconv.Unquote(string(v))
 		// s += "\t\"" + cols[i] + "\": \"" + escv + "\""
+		re := regexp.MustCompile(`\r\n|[\r\n\v\f\x{0085}\x{2028}\x{2029}]`)
+		re.ReplaceAllString(string(v), "\\n")
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 		log.Println(s)
 	}
 	s += "\n}"
 	log.Println(s)
-	re := regexp.MustCompile(`\n`)
-	re.ReplaceAllString(s, "\\n")
 	return s
 }
 
