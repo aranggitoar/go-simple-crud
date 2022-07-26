@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -104,22 +105,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		// tmp, err := strconv.Unquote(`"` + ToStringifiedJSON(res, cols) + `"`)
-		// tmp, err := json.Marshal(ToStringifiedJSON(res, cols))
 		tmp := ToStringifiedJSON(res, cols)
-		// if err != nil {
-		// 	log.Println(err)
-		// 	return nil, err
-		// }
-		// var s string
-		// err = json.Unmarshal(tmp, &s)
-		// bytes, err := tmp.MarshalJSON()
-		// if err != nil {
-		// 	log.Println(err)
-		// 	return nil, err
-		// }
-		// log.Println(s)
-		// err = json.Unmarshal([]byte(s), &t)
 		err = json.Unmarshal([]byte(tmp), &t)
 		if err != nil {
 			log.Println(err)
@@ -225,14 +211,19 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
 	for i, v := range row {
 		if i == 0 {
-			s += "{"
+			s += "{\n"
 		}
 		if i > 0 {
-			s += ","
+			s += ",\n"
 		}
-		s += "\"" + cols[i] + "\": \"" + string(v) + "\""
+		escv, err := strconv.Unquote(`"` + string(v) + `"`)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(escv)
+		s += "\t\"" + cols[i] + "\": \"" + escv + "\""
 	}
-	s += "}"
+	s += "\n}"
 	return s
 }
 
