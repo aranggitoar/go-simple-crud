@@ -217,13 +217,13 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		if i > 0 {
 			s += ",\n"
 		}
-		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
+		escv, _ := strconv.Unquote(string(v))
+		s += "\t\"" + cols[i] + "\": \"" + escv + "\""
+		log.Println(s)
 	}
 	s += "\n}"
 	log.Println(s)
-	escaped, _ := strconv.Unquote(string(s))
-	log.Println(escaped)
-	return escaped
+	return s
 }
 
 /*
