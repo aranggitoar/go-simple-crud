@@ -104,19 +104,22 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		tmp, err := json.Marshal(ToStringifiedJSON(res, cols))
+		tmp := json.RawMessage(ToStringifiedJSON(res, cols))
+		// tmp, err := json.Marshal(ToStringifiedJSON(res, cols))
+		// if err != nil {
+		// 	log.Println(err)
+		// 	return nil, err
+		// }
+		// var s string
+		// err = json.Unmarshal(tmp, &s)
+		bytes, err := tmp.MarshalJSON()
 		if err != nil {
 			log.Println(err)
 			return nil, err
 		}
-		var s string
-		err = json.Unmarshal(tmp, &s)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		log.Println(s)
-		err = json.Unmarshal([]byte(s), &t)
+		// log.Println(s)
+		// err = json.Unmarshal([]byte(s), &t)
+		err = json.Unmarshal(bytes, &t)
 		if err != nil {
 			log.Println(err)
 			return nil, err
