@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -224,6 +225,8 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 	}
 	s += "\n}"
 	log.Println(s)
+	re := regexp.MustCompile(`\n`)
+	re.ReplaceAllString(s, "\\n")
 	return s
 }
 
