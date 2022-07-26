@@ -144,11 +144,11 @@ func (d *Driver[T]) ReadRow(tn string, qh *QueryHook) (*T, error) {
 	// struct type.
 	var single T
 	err = json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &single)
-  if err != nil {
-    log.Println(err)
-    return nil, err
-  }
-  return &single, err
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return &single, err
 }
 
 // Update certain row from a table.
@@ -165,6 +165,15 @@ func (d *Driver[T]) UpdateRow(tn string, fvs string, qh *QueryHook) error {
 // Returns error if something wrong happened.
 func (d *Driver[T]) DeleteRow(tn string, qh *QueryHook) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE %s = \"%s\";", tn, qh.Name, qh.Value)
+	return UpdateDeleteHelper(d, query, RowDeleteFailed)
+}
+
+// Delete multiple rows from a table.
+// Takes the table's name, to be deleted column's hook, and its value with
+// this format: `1, 2, 3, 4` or `"Article 1", "Article 2", "Article 3"`
+// Returns error if something wrong happened.
+func (d *Driver[T]) DeleteRows(tn string, qh *QueryHook) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s IN (\"%s\");", tn, qh.Name, qh.Value)
 	return UpdateDeleteHelper(d, query, RowDeleteFailed)
 }
 
@@ -200,17 +209,16 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
 	for i, v := range row {
 		if i == 0 {
-			s += "{\n"
+			s += "{\\n"
 		}
 		if i > 0 {
-			s += ",\n"
+			s += ",\\n"
 		}
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 	}
-	s += "\n}"
+	s += "\\n}"
 	return s
 }
-
 
 /*
 
