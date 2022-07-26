@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"regexp"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -105,11 +104,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		err := json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &t)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
+		json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &t)
 		all = append(all, t)
 	}
 
@@ -217,11 +212,6 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		if i > 0 {
 			s += ",\n"
 		}
-		// log.Println(string(v))
-		// escv, _ := strconv.Unquote(string(v))
-		// s += "\t\"" + cols[i] + "\": \"" + escv + "\""
-		re := regexp.MustCompile(`\r\n|[\r\n\v\f\x{0085}\x{2028}\x{2029}]`)
-		re.ReplaceAllString(string(v), "\\n")
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 		log.Println(s)
 	}
