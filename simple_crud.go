@@ -116,7 +116,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 			return nil, err
 		}
 		log.Println(s)
-		err = json.Unmarshal(s, &t)
+		err = json.Unmarshal([]byte(s), &t)
 		if err != nil {
 			log.Println(err)
 			return nil, err
