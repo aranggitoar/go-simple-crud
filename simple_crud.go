@@ -110,7 +110,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 			return nil, err
 		}
 		log.Println(tmp)
-		json.Unmarshal(tmp, &t)
+		err = json.Unmarshal(tmp, &t)
 		// json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &t)
 		if err != nil {
 			log.Println(err)
