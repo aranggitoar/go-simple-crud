@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strconv"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -220,12 +219,13 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		tmp := string(v)
 		re := regexp.MustCompile("\\n")
 		tmp = re.ReplaceAllString(tmp, " ")
-		escv, err := strconv.Unquote(`"` + tmp + `"`)
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(escv)
-		s += "\t\"" + cols[i] + "\": \"" + escv + "\""
+		// escv, err := strconv.Unquote(`"` + tmp + `"`)
+		// if err != nil {
+		// 	log.Println(err)
+		// }
+		// log.Println(escv)
+		// s += "\t\"" + cols[i] + "\": \"" + escv + "\""
+		s += "\t\"" + cols[i] + "\": \"" + tmp + "\""
 	}
 	s += "\n}"
 	return s
