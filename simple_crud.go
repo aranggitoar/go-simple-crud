@@ -208,6 +208,8 @@ func DynamicScannerValues(row [][]byte, cols []string) []any {
 
 func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
+	log.Println(row)
+	log.Println(cols)
 	for i, v := range row {
 		if i == 0 {
 			s += "{\n"
