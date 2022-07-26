@@ -220,6 +220,7 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 	}
 	s += "\n}"
+	log.Println(s)
 	escaped, _ := strconv.Unquote(string(s))
 	log.Println(escaped)
 	return escaped
