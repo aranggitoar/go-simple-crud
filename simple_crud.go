@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -209,14 +210,15 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
 	for i, v := range row {
 		if i == 0 {
-			s += "{"
+			s += "{\n"
 		}
 		if i > 0 {
-			s += ","
+			s += ",\n"
 		}
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 	}
-	s += "}"
+	s += "\n}"
+	s, _ = strconv.Unquote(s)
 	return s
 }
 
