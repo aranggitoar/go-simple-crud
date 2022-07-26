@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/mattn/go-sqlite3"
 )
@@ -104,8 +105,13 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		tmp := []byte(ToStringifiedJSON(res, cols))
-		json.Unmarshal(tmp, &t)
+		tmp, err := strconv.Unquote(ToStringifiedJSON(res, cols))
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		json.Unmarshal([]byte(tmp), &t)
+		// json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &t)
 		if err != nil {
 			log.Println(err)
 			return nil, err
@@ -208,8 +214,6 @@ func DynamicScannerValues(row [][]byte, cols []string) []any {
 
 func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
-	log.Println(row)
-	log.Println(cols)
 	for i, v := range row {
 		if i == 0 {
 			s += "{\n"
@@ -222,7 +226,6 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		// log.Println(escv)
 		// s += "\t\"" + cols[i] + "\": \"" + escv + "\""
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
-		log.Println(s)
 	}
 	s += "\n}"
 	log.Println(s)
