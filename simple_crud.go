@@ -105,7 +105,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		tmp, err := strconv.Unquote(ToStringifiedJSON(res, cols))
+		tmp, err := strconv.Unquote(`"` + ToStringifiedJSON(res, cols) + `"`)
 		// tmp, err := json.Marshal(ToStringifiedJSON(res, cols))
 		if err != nil {
 			log.Println(err)
