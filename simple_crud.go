@@ -105,8 +105,7 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 		// Transform results into structs of the specified custom database
 		// struct type.
 		var t T
-		tmp := ToStringifiedJSON(res, cols)
-		err = json.Unmarshal([]byte(tmp), &t)
+		err = json.Unmarshal([]byte(ToStringifiedJSON(res, cols)), &t)
 		if err != nil {
 			log.Println(err)
 			return nil, err
@@ -217,14 +216,11 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 			s += ",\n"
 		}
 		tmp := string(v)
-		re := regexp.MustCompile("\\n")
-		tmp = re.ReplaceAllString(tmp, " ")
-		// escv, err := strconv.Unquote(`"` + tmp + `"`)
-		// if err != nil {
-		// 	log.Println(err)
-		// }
-		// log.Println(escv)
-		// s += "\t\"" + cols[i] + "\": \"" + escv + "\""
+		// Escape newlines and quotes if it hasn't been escaped.
+		re := regexp.MustCompile("\"")
+		tmp = re.ReplaceAllString(tmp, "\\\"")
+		re = regexp.MustCompile("\n")
+		tmp = re.ReplaceAllString(tmp, "\\n")
 		s += "\t\"" + cols[i] + "\": \"" + tmp + "\""
 	}
 	s += "\n}"
