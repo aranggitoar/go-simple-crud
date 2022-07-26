@@ -209,14 +209,14 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 	var s string
 	for i, v := range row {
 		if i == 0 {
-			s += "{\\n"
+			s += "{"
 		}
 		if i > 0 {
-			s += ",\\n"
+			s += ","
 		}
 		s += "\t\"" + cols[i] + "\": \"" + string(v) + "\""
 	}
-	s += "\\n}"
+	s += "}"
 	return s
 }
 
