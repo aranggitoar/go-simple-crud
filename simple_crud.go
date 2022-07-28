@@ -221,6 +221,8 @@ func ToStringifiedJSON(row [][]byte, cols []string) string {
 		tmp = re.ReplaceAllString(tmp, "\\\"")
 		re = regexp.MustCompile("\n")
 		tmp = re.ReplaceAllString(tmp, "\\n")
+		re = regexp.MustCompile("\r")
+		tmp = re.ReplaceAllString(tmp, "\\r")
 		s += "\t\"" + cols[i] + "\": \"" + tmp + "\""
 	}
 	s += "\n}"
