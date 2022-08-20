@@ -83,14 +83,14 @@ func (d *Driver[T]) CreateRow(tn string, fn string, vs string) error {
 // Takes the table's name.
 // Returns all rows in the struct type that was initialized with a nil as
 // an error value or nil with an error value if something wrong happened.
-func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
+func (d *Driver[T]) ReadAllRow(tn string) ([]*T, error) {
 	rows, err := d.db.Query(fmt.Sprintf("SELECT * FROM %s;", tn))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var all []T
+	var all []*T
 
 	// Get the columns dynamically.
 	cols, _ := rows.Columns()
@@ -110,10 +110,10 @@ func (d *Driver[T]) ReadAllRow(tn string) (*[]T, error) {
 			log.Println(err)
 			return nil, err
 		}
-		all = append(all, t)
+		all = append(all, &t)
 	}
 
-	return &all, nil
+	return all, nil
 }
 
 // Get certain row from a table.
