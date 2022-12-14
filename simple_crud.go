@@ -7,8 +7,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-
-	"github.com/mattn/go-sqlite3"
+	"strings"
 )
 
 // Column name and column value struct type for searching specific rows.
@@ -68,11 +67,8 @@ func (d *Driver[T]) CreateRow(tn string, fn string, vs string) error {
 	query := fmt.Sprintf("INSERT INTO %s(%s) values(%s);", tn, fn, vs)
 	_, err := d.db.Exec(query)
 	if err != nil {
-		var sqliteErr sqlite3.Error
-		if errors.As(err, &sqliteErr) {
-			if errors.Is(sqliteErr.ExtendedCode, sqlite3.ErrConstraintUnique) {
-				return DuplicateRow
-			}
+		if strings.Contains(err.Error(), "unique constraint") {
+			return DuplicateRow
 		}
 		return err
 	}
